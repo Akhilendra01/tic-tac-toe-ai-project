@@ -2,7 +2,10 @@ const matrix = document.createElement("table");
 const moveLabel = document.querySelector("h1");
 const board = new Array(9);
 for (let i = 0; i < 9; i++) board[i] = -1;
-let symbol = 1, startHuman = 1, human=0, computer=0;
+let symbol = 1,
+  startHuman = 1,
+  human = 0,
+  computer = 0;
 
 const magic = [8, 3, 4, 1, 5, 9, 6, 7, 2];
 const pos = {};
@@ -34,12 +37,17 @@ function checkWin(symbol) {
 
 function move(comp) {
   //empty board
+  console.log(board);
   if (count() === 9) {
     board[4] = 0;
     return;
   }
   //if comp first move is second
   if (count() === 8) {
+    if(board[4]===1-comp){
+      board[0]=comp;
+      return;
+    }
     const candidates = [4, 1, 3, 5, 7];
     for (let key of candidates) {
       if (board[key] === -1) {
@@ -66,14 +74,13 @@ function move(comp) {
       }
 
   //stop opponents win in 1 move for opponent exists
-  comp = 1 - comp;
-  for (let i = 0; i < 9; i++)
-    for (let j = 0; j < 9; j++)
+  for (let i = 0; i < 9; i++){
+    for (let j = 0; j < 9; j++){
       for (let k = 0; k < 9; k++) {
         if (i == j || j == k || k == i) continue;
         if (
-          board[i] === comp &&
-          board[j] == comp &&
+          board[i] === 1-comp &&
+          board[j] == 1-comp &&
           board[k] === -1 &&
           magic[i] + magic[j] + magic[k] === 15
         ) {
@@ -81,49 +88,49 @@ function move(comp) {
           return;
         }
       }
-  comp = 1 - comp;
+    }
+  }
 
   //check if opponent has force win in 2 and stop it
   for (let i = 0; i < 9; i++) {
-    if (i !== -1) continue; //box should be empty
+    if (board[i] !== -1) continue; //box should be empty
     let c = 0;
     for (let j = 0; j < 9; j++)
       for (let k = 0; k < 9; k++) {
         if (i == j || j == k || k == i) continue;
-        if (
-          board[j] === 1 - comp &&
-          board[k] === 1 - comp &&
-          magic[i] + magic[j] + magic[k] === 15
-        )
-          c++;
+        if(board[j]!==1-comp || board[k]!==1-comp)continue;
+        let p1=pos[15-magic[i]-magic[j]];
+        let p2=pos[15-magic[i]-magic[k]];
+        if(p1!==i && p1!==j && p1!==k && p2!==i && p2!==j && p2!==k)
+        if (p1>=0 && board[p1]==-1 && p2>=0 && board[p2]==-1){
+          board[i]=comp;
+          return;
+        }
       }
-    if (c > 1) {
-      board[i] = comp;
-      return;
-    }
   }
-
+  
   //checking if a win in 2 can be forced over opponent
   for (let i = 0; i < 9; i++) {
     if (i !== -1) continue; //box should be empty
     let c = 0;
     for (let j = 0; j < 9; j++)
-      for (let k = 0; k < 9; k++) {
-        if (i == j || j == k || k == i) continue;
-        if (
-          board[j] === comp &&
-          board[k] === comp &&
-          magic[i] + magic[j] + magic[k] === 15
-        )
-          c++;
-      }
-    if (c > 1) {
-      board[i] = comp;
-      return;
-    }
+    for (let k = 0; k < 9; k++) {
+  if (i == j || j == k || k == i) continue;
+  if (
+    board[j] === comp &&
+    board[k] === comp &&
+    magic[i] + magic[j] + magic[k] === 15
+    )
+    c++;
   }
-  for (let i = 0; i < 9; i++) {
-    if (board[i] === -1) {
+  if (c > 1) {
+    board[i] = comp;
+    return;
+  }
+}
+for (let i = 0; i < 9; i++) {
+  if (board[i] === -1) {
+      console.log('hi');
       board[i] = comp;
       return;
     }
