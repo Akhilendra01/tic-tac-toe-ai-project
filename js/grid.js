@@ -91,6 +91,7 @@ function move(comp) {
   }
 
   //check if opponent has force win in 2 and stop it
+  let idx = [];
   for (let i = 0; i < 9; i++) {
     if (board[i] !== -1) continue; //box should be empty
     let c = 0;
@@ -109,10 +110,40 @@ function move(comp) {
           p2 !== k
         )
           if (p1 >= 0 && board[p1] == -1 && p2 >= 0 && board[p2] == -1) {
-            board[i] = comp;
-            return;
+            idx.push(i);
           }
       }
+  }
+  let idxs = new Set(idx);
+  console.log(idxs);
+
+  if (idxs.length === 1) {
+    board[idxs[0]] = comp;
+    return;
+  }
+  if (idxs.length > 1) {
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === -1) continue;
+      for (let j = 0; i < 9; j++) {
+        for (let k = 0; i < 9; k++) {
+          if (i == j || j == k || k == i) continue;
+          if (
+            magic[i] + magic[j] + magic[k] == 15 &&
+            board[j] === -1 &&
+            board[k] === -1
+          ) {
+            if (k !== idxs[0] && k !== idxs[1]) {
+              board[j] = comp;
+              return;
+            }
+            if (j !== idxs[0] && j !== idxs[1]) {
+              board[j] = comp;
+              return;
+            }
+          }
+        }
+      }
+    }
   }
 
   //checking if a win in 2 can be forced over opponent
