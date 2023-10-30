@@ -115,7 +115,6 @@ function move(comp) {
       }
   }
   let idxs = new Set(idx);
-  console.log(idxs);
 
   if (idxs.length === 1) {
     board[idxs[0]] = comp;
